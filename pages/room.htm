@@ -1,0 +1,23 @@
+<div>
+    <!--TODO: Scrolling in the chat when more messages are present-->
+    <div>    
+        
+
+        
+        <div ng-repeat="message in firebaseData">
+            <span>{{message.email}} </span>
+            <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
+            <span>{{message.value}}</span>
+        </div>
+        
+        
+        
+    </div>
+    <div>
+        <form class="form-inline" id="main-container" ng-submit="sendMessage()" > <!--action="/action_page.php"-->
+            <div class="btn btn-default" id="left-content">{{email}}</div>
+            <input type="text" class="form-control" id="center-content" placeholder="Enter your message" name="message" ng-model="message">
+            <button type="submit" class="btn btn-default" id="right-content">Send</button>
+        </form>
+    </div>
+</div>

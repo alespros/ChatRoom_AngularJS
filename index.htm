@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en-us" ng-app="chatApp">
+    <head>
+        <title>Chat Klient AngularJS</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta charset="UTF-8">
+
+        <!-- load bootstrap and fontawesome via CDN -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+        <style>
+            html, body, input, select, textarea
+            {
+                font-size: 1.05em !important;
+            }
+        </style>
+        
+        <!-- jquery -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        
+        <!-- load angular via CDN -->
+        <script src="//code.angularjs.org/1.7.7/angular.min.js"></script>
+        <script src="//code.angularjs.org/1.7.7/angular-route.min.js"></script>
+        <script src="//code.angularjs.org/1.7.7/angular-cookies.min.js"></script>
+        
+        <!-- TODO: Only import the individual SDK components.
+        https://www.gstatic.com/firebasejs/5.0.0/firebase-<PACKAGE>.js-->
+        <script src="//www.gstatic.com/firebasejs/5.8.2/firebase.js"></script>
+        
+        <!-- AngularFire -->
+        <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+        
+        <script src="https://underscorejs.org/underscore-min.js"></script>
+        
+        <script src="app.js"></script>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+      </head>
+    <body>
+
+        <header>
+			<nav class="navbar navbar-default">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="/">Chat Klient AngularJS</a>
+				</div>
+
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#"><i class="fa fa-home"></i> Home</a></li>
+				</ul>
+			</div>
+			</nav>
+		</header>
+
+        <div class="container">
+
+            <div ng-view></div>
+
+		</div>
+
+    </body>
+</html>
