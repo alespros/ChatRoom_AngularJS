@@ -12,7 +12,7 @@ chatApp.config(function($routeProvider) {
     })
 });
 
-chatApp.controller("homeController", ["$scope", "$location", "$cookies", "firebaseDatabase", "modalService", function($scope, $location, $cookies, firebaseDatabase, modalService) {
+chatApp.controller("homeController", ["$scope", "$location", "$cookies", "firebaseDatabase", function($scope, $location, $cookies, firebaseDatabase, modalService) {
     
     $scope.email = $cookies.get("email");
     
@@ -24,25 +24,10 @@ chatApp.controller("homeController", ["$scope", "$location", "$cookies", "fireba
         
     }
     
-    $scope.bodyText = 'This text can be updated in modal 1';
-
-    $scope.openModal = function(id){
-        console.log("ahoj openModal");
-        modalService.Open(id);
-    }
-
-    $scope.closeModal = function(id){
-        console.log("ahoj closeModal");
-        modalService.Close(id);
-    }
-    
 }]);
 
-chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$firebaseArray", "firebaseDatabase", "$routeParams", "$q", function($scope, $cookies, $timeout, $firebaseArray, firebaseDatabase, $routeParams, $q) {
-    console.log("room.htm");
-    
+chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$firebaseArray", "firebaseDatabase", "$routeParams", "$q", "modalService", function($scope, $cookies, $timeout, $firebaseArray, firebaseDatabase, $routeParams, $q, modalService) {
     $scope.email = $cookies.get("email");
-    console.log($scope.email);
     
     firebaseDatabase.getData($routeParams.number)
     .then(function(data) {
@@ -53,10 +38,18 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         firebaseDatabase.sendData($routeParams.number, $scope.email, $scope.message);
         $scope.message = "";
     };
-//    
-//    $timeout(function() {
-//        console.log($scope.firebaseData)
-//    }, 4000)
+
+    $scope.openModal = function(id){
+        modalService.Open(id);
+    }
+
+    $scope.closeModal = function(id){
+        modalService.Close(id);
+    }
+    
+    $scope.$watch('email',function(newVal,oldVal){
+        $cookies.put("email", $scope.email);
+    });
 }]);
 
 chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", "$q", function($firebaseArray, $timeout, $location, $q) {
@@ -128,10 +121,9 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                     value: message,
                     email: email
                 }
-            console.log(indexOfTheRoom + 1)
                 firebaseData.$save(indexOfTheRoom)
                     .then(function(ref) {
-                        console.log("New message send!", ref)
+                        //Do something
                     })
                     .catch(function(error) {
                         console.log("Error:", error)
@@ -187,8 +179,6 @@ chatApp.directive("modal", ["modalService", function(modalService){
                 console.error('modal must have an id');
                 return;
             }
-            
-            console.log(element);
 
             // move element to bottom of page (just before </body>) so it can be displayed above everything else
             element.appendTo('body');
