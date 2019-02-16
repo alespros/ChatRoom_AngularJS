@@ -83,7 +83,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
 
                     firebaseData[indexOfTheRoom][1] = {
                         timestamp: new Date().valueOf(),
-                        value: "The link to the room is: http://127.0.0.1:64526/index.htm#!/room" + indexOfTheRoom
+                        value: "The link to the room is: " + $location.absUrl() + "room" + indexOfTheRoom
                     }
 
                     firebaseData.$save(indexOfTheRoom).then(function(ref) {
