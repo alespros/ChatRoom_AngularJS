@@ -51,8 +51,19 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         $cookies.put("email", $scope.email);
     });
     
-    $scope.richtext = function(command) {
-        document.execCommand(command, false, null);
+    $scope.richtext = function(command) {    
+        if (command == "monospace") {
+            document.execCommand("fontName", false, command);
+        } else if (command == "defaultfont") {
+            //Get the font-family from the body tag, which is set in the css file
+            var bodyTag = document.querySelector('body');
+            var style = window.getComputedStyle(bodyTag);
+            var fontFamily = style.getPropertyValue('font-family');
+            
+            document.execCommand("fontName", false, fontFamily);
+        } else {
+            document.execCommand(command, false, null);
+        }
     }
 }]);
 
