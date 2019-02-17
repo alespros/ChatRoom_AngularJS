@@ -6,6 +6,7 @@
             <span>{{message.email}} </span>
             <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
             <span ng-bind-html="message.value"></span>
+            <a ng-href="{{message.downloadURL}}" ng-show="message.downloadURL">Uploaded file</a>
         </div>       
         
     </div>
