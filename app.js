@@ -35,8 +35,8 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     })
     
     $scope.sendMessage = function() {
-        firebaseDatabase.sendData($routeParams.number, $scope.email, $scope.message);
-        $scope.message = "";
+        firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html());
+        $('.mycontenteditable').empty();
     };
 
     $scope.openModal = function(id){
@@ -50,6 +50,10 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     $scope.$watch('email',function(newVal,oldVal){
         $cookies.put("email", $scope.email);
     });
+    
+    $scope.richtext = function(command) {
+        document.execCommand(command, false, null);
+    }
 }]);
 
 chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", "$q", function($firebaseArray, $timeout, $location, $q) {

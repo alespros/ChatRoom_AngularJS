@@ -1,22 +1,26 @@
 <div>
     <!--TODO: Scrolling in the chat when more messages are present-->
-    <div>    
-        
-
+    <div>
         
         <div ng-repeat="message in firebaseData">
             <span>{{message.email}} </span>
             <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
             <span>{{message.value}}</span>
-        </div>
-        
-        
+        </div>       
         
     </div>
     <div>
+        <!--TODO: Move the buttons to the bottom of the page.-->
+        <div>
+          <a href ng-click="richtext('bold')" data-command='bold'>Bold</a>
+          <a href ng-click="richtext('italic')" data-command='bold'>Italic</a>
+          <a href ng-click="richtext('underline')" data-command='bold'>Underline</a>
+        </div>
+        
+        <!--TODO: Handle enter key press-->
         <form class="form-inline" id="main-container" ng-submit="sendMessage()" > <!--action="/action_page.php"-->
             <div class="btn btn-default" id="left-content" ng-click="openModal('custom-modal-1')">{{email}}</div>
-            <input type="text" class="form-control" id="center-content" placeholder="Enter your message" name="message" ng-model="message">
+            <div class="form-control mycontenteditable" id="center-content" contenteditable></div>
             <button type="submit" class="btn btn-default" id="right-content">Send</button>
         </form>
     </div>

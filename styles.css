@@ -8,6 +8,11 @@
 
 #center-content {
     flex:auto; /* Lets middle column shrink/grow to available width */
+    
+    /* Make the text area scrollable to the right/left with the scrollbars hidden.*/
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 #left-content,
