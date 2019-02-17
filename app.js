@@ -1,4 +1,4 @@
-var chatApp = angular.module("chatApp", ["ngRoute", "ngCookies", "firebase"]);
+var chatApp = angular.module("chatApp", ["ngRoute", "ngCookies", "ngSanitize", "firebase"]);
 
 chatApp.config(function($routeProvider) {
     $routeProvider

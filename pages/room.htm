@@ -5,7 +5,7 @@
         <div ng-repeat="message in firebaseData">
             <span>{{message.email}} </span>
             <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
-            <span>{{message.value}}</span>
+            <span ng-bind-html="message.value"></span>
         </div>       
         
     </div>
