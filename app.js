@@ -32,6 +32,11 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         $scope.firebaseData = data;
     })
     
+    $scope.finishedRenderingData = function() {
+        var objDiv = document.getElementById("messages-container");
+        objDiv.scrollTop = objDiv.scrollHeight;
+    }
+    
     $scope.sendMessage = function() {
         var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadFileURL)
         $('.mycontenteditable').empty();

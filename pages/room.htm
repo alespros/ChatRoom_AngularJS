@@ -1,7 +1,7 @@
 <div>
     <div id="main-container">
         <div id="messages-container">
-            <div ng-repeat="message in firebaseData">
+            <div ng-repeat="message in firebaseData" ng-init="$last && finishedRenderingData()">
                 <span>{{message.email}} </span>
                 <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
                 <span ng-bind-html="message.value"></span>
