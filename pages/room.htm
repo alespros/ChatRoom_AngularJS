@@ -18,8 +18,7 @@
             <a href ng-click="richtext('monospace')">Monospace</a>
             <a href ng-click="richtext('defaultfont')">Default font</a> <!--Set in the "body {}" in the style.css file.-->
             
-            <input type="file" id="upload-file">
-            <div class="btn btn-default" ng-click="uploadFile()">Nahraj soubor!</div>
+            <a href ng-click="openModal('custom-modal-2')">Upload file</a>
         </div>
         
         <!--TODO: Handle enter key press-->
@@ -42,6 +41,23 @@
                     <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" ng-model="email">
                 </p>
                 <button type="submit" class="btn btn-default">Close</button>
+
+            </form>
+        </div>
+        <div class="modal-background"></div>
+    </modal>
+    
+    <modal id="custom-modal-2">
+        <!--TODO: For some reason, the class of the next div can't be named "modal", idk why.-->
+        <div class="levelOne">
+            <form class="modal-body" ng-submit="closeModal('custom-modal-2');">
+
+                <!--Everything inside the modal-body can be changed and the modal will work the same.-->
+                <h1>Upload the file!</h1>
+                <p>
+                    <input type="file" id="upload-file">
+                </p>
+                <div class="btn btn-default" ng-click="uploadFile()">Nahraj soubor!</div>
 
             </form>
         </div>
