@@ -2,12 +2,32 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#main-container {
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden
+}
+
+#messages-container {
+    position:absolute;
+    top:52px;           /*Set based on the header height.*/
+    bottom:60px;        /*Set based on the bottom div height.*/
+    left:0px;
+    right:0px;
+    overflow:auto;
+}
+
+#bottom-container {
+    position:absolute;
+    bottom:0px;
+    height:60px;
+    left:0px;
+    right:0px;
+    overflow:hidden;
+}
+
+#bottom-container-text-input {
         display: flex;
-        position: absolute;
-        bottom: 0px;
-        left: 0px;
-        right: 0px;
 }
 
 #center-content {

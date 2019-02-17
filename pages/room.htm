@@ -1,33 +1,35 @@
 <div>
-    <!--TODO: Scrolling in the chat when more messages are present-->
-    <div>
-        
-        <div ng-repeat="message in firebaseData">
-            <span>{{message.email}} </span>
-            <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
-            <span ng-bind-html="message.value"></span>
-            <a ng-href="{{message.downloadURL}}" ng-show="message.downloadURL">Uploaded file</a>
-        </div>       
-        
-    </div>
-    <div>
-        <!--TODO: Move the buttons to the bottom of the page.-->
-        <div>
-            <a href ng-click="richtext('bold')">Bold</a>
-            <a href ng-click="richtext('italic')">Italic</a>
-            <a href ng-click="richtext('underline')">Underline</a>
-            <a href ng-click="richtext('monospace')">Monospace</a>
-            <a href ng-click="richtext('defaultfont')">Default font</a> <!--Set in the "body {}" in the style.css file.-->
-            
-            <a href ng-click="openModal('custom-modal-2')">{{uploadFileButton}}</a>
+    <div id="main-container">
+        <div id="messages-container">
+            <div ng-repeat="message in firebaseData">
+                <span>{{message.email}} </span>
+                <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
+                <span ng-bind-html="message.value"></span>
+                <a ng-href="{{message.downloadFileURL}}" ng-show="message.downloadFileURL">Uploaded file</a>
+            </div>
         </div>
         
-        <!--TODO: Handle enter key press-->
-        <form class="form-inline" id="main-container" ng-submit="sendMessage()" > <!--action="/action_page.php"-->
-            <div class="btn btn-default" id="left-content" ng-click="openModal('custom-modal-1')">{{email}}</div>
-            <div class="form-control mycontenteditable" id="center-content" contenteditable></div>
-            <button type="submit" class="btn btn-default" id="right-content">Send</button>
-        </form>
+        <div id="bottom-container">
+            <div>
+                <a href ng-click="richtext('bold')">Bold</a>
+                <a href ng-click="richtext('italic')">Italic</a>
+                <a href ng-click="richtext('underline')">Underline</a>
+                <a href ng-click="richtext('monospace')">Monospace</a>
+                <a href ng-click="richtext('defaultfont')">Default font</a> <!--Set in the "body {}" in the style.css file.-->
+
+                <a href ng-click="openModal('custom-modal-2')">{{uploadFileButton}}</a>
+            </div>
+
+            <!--TODO: Handle enter key press-->
+            <div>
+                <form class="form-inline" id="bottom-container-text-input" ng-submit="sendMessage()" > <!--action="/action_page.php"-->
+                    <div class="btn btn-default" id="left-content" ng-click="openModal('custom-modal-1')">{{email}}</div>
+                    <div class="form-control mycontenteditable" id="center-content" contenteditable></div>
+                    <button type="submit" class="btn btn-default" id="right-content">Send</button>
+                </form>
+            </div>
+        </div>
+    
     </div>
     
     <modal id="custom-modal-1">

@@ -33,9 +33,14 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     })
     
     $scope.sendMessage = function() {
-        firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadFileURL)
+        var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadFileURL)
         $('.mycontenteditable').empty();
         resetUploadFile();
+        
+        promise.then(function() {
+            var objDiv = document.getElementById("messages-container");
+            objDiv.scrollTop = objDiv.scrollHeight;
+        });
     };
 
     $scope.openModal = function(id){
@@ -158,6 +163,8 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
     }
     
     this.sendData = function(indexOfTheRoom, email, message, downloadFileURL) {
+        var deferred = $q.defer();
+        
         firebaseData.$loaded()
             .then(function(x) {
                 indexOfTheRoom = parseInt(indexOfTheRoom, 10)
@@ -171,6 +178,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                 firebaseData.$save(indexOfTheRoom)
                     .then(function(ref) {
                         //Do something
+                        deferred.resolve();
                     })
                     .catch(function(error) {
                         console.log("Error:", error)
@@ -179,6 +187,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
             .catch(function(error) {
                 console.log("Error:", error);
             });
+        return deferred.promise;
     }
     
     this.uploadFile = function(selectedFile, folderInFirebaseStorage) {        
