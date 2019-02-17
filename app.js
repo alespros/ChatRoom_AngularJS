@@ -33,7 +33,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     })
     
     $scope.sendMessage = function() {
-        firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadURL)
+        firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadFileURL)
         $('.mycontenteditable').empty();
         resetUploadFile();
     };
@@ -68,15 +68,15 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     //Upload file from local storage
     var resetUploadFile = function() {
         $scope.uploadFileButton = "Upload file"
-        $scope.uploadStatus = "";
-        $scope.downloadURL = "";
+        $scope.uploadFileStatus = "";
+        $scope.downloadFileURL = "";
     }
     resetUploadFile();
     $scope.uploadFile = function(id) {
         resetUploadFile();
         var selectedFile = $("#upload-file")[0].files[0]
         if (selectedFile.size > 52428800) {
-            $scope.uploadStatus = "Please choose a different file. The maximum size is 50 MB.";
+            $scope.uploadFileStatus = "Please choose a different file. The maximum size is 50 MB.";
             return
         }
         
@@ -84,16 +84,16 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         var promise = firebaseDatabase.uploadFile(selectedFile, folderInFirebaseStorage);
         promise.then(function(greeting) {
             //from deferred.resolve("message");
-            $scope.downloadURL = greeting;
+            $scope.downloadFileURL = greeting;
             $scope.uploadFileButton = "File added to the message.";
-            $scope.uploadStatus = "File added to the message.";
+            $scope.uploadFileStatus = "File added to the message.";
             modalService.Close(id);
         }, function(reason) {
             //from deferred.reject("message");
-            $scope.uploadStatus = reason;
+            $scope.uploadFileStatus = reason;
         }, function(update) {
             //from deferred.notify("message");
-            $scope.uploadStatus = update;
+            $scope.uploadFileStatus = update;
         });
     }
 }]);
@@ -157,7 +157,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
         return deferred.promise;
     }
     
-    this.sendData = function(indexOfTheRoom, email, message, downloadURL) {
+    this.sendData = function(indexOfTheRoom, email, message, downloadFileURL) {
         firebaseData.$loaded()
             .then(function(x) {
                 indexOfTheRoom = parseInt(indexOfTheRoom, 10)
@@ -166,7 +166,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                     timestamp: new Date().valueOf(),
                     value: message,
                     email: email,
-                    downloadURL: downloadURL
+                    downloadFileURL: downloadFileURL
                 }
                 firebaseData.$save(indexOfTheRoom)
                     .then(function(ref) {
