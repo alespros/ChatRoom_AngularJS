@@ -64,10 +64,28 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         }
     }
     
-    $scope.uploadFile = function() {
+    //Upload file from local storage
+    $scope.uploadFileButton = "Upload file"
+    $scope.uploadStatus = "";
+    $scope.downloadURL = "";
+    $scope.uploadFile = function(id) {
         var selectedFile = $("#upload-file")[0].files[0]
         var folderInFirebaseStorage = "/files/"
-        firebaseDatabase.uploadFile(selectedFile, folderInFirebaseStorage);
+        
+        var promise = firebaseDatabase.uploadFile(selectedFile, folderInFirebaseStorage);
+        promise.then(function(greeting) {
+            //from deferred.resolve("message");
+            $scope.downloadURL = greeting;
+            $scope.uploadFileButton = "File added to the message.";
+            $scope.uploadStatus = "File added to the message.";
+            modalService.Close(id);
+        }, function(reason) {
+            //from deferred.reject("message");
+            $scope.uploadStatus = reason;
+        }, function(update) {
+            //from deferred.notify("message");
+            $scope.uploadStatus = update;
+        });
     }
 }]);
 
@@ -154,6 +172,8 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
     }
     
     this.uploadFile = function(selectedFile, folderInFirebaseStorage) {        
+        var deferred = $q.defer();
+        
         if(selectedFile === undefined) {
             console.log("Select the file, please.")
         } else {
@@ -170,25 +190,29 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
               // Observe state change events such as progress, pause, and resume
               // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
               var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              console.log('Upload is ' + progress + '% done');
+              deferred.notify('Upload is ' + progress + '% done');
               switch (snapshot.state) {
                 case firebase.storage.TaskState.PAUSED: // or 'paused'
-                  console.log('Upload is paused');
+                      deferred.notify('Upload is paused');
                   break;
                 case firebase.storage.TaskState.RUNNING: // or 'running'
-                  console.log('Upload is running');
+                      deferred.notify('Upload is running');
                   break;
               }
             }, function(error) {
               // Handle unsuccessful uploads
+              deferred.reject('Error:, ', error);
             }, function() {
               // Handle successful uploads on complete
               // For instance, get the download URL: https://firebasestorage.googleapis.com/...
               uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                console.log('File available at', downloadURL);
+                  //return the downloadURL where the file is available at
+                  deferred.resolve(downloadURL);
               });
             });
         }
+        
+        return deferred.promise;
     };
 }])
 
