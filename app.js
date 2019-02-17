@@ -33,8 +33,9 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     })
     
     $scope.sendMessage = function() {
-        firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html());
+        firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadURL)
         $('.mycontenteditable').empty();
+        resetUploadFile();
     };
 
     $scope.openModal = function(id){
@@ -65,9 +66,12 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     }
     
     //Upload file from local storage
-    $scope.uploadFileButton = "Upload file"
-    $scope.uploadStatus = "";
-    $scope.downloadURL = "";
+    var resetUploadFile = function() {
+        $scope.uploadFileButton = "Upload file"
+        $scope.uploadStatus = "";
+        $scope.downloadURL = "";
+    }
+    resetUploadFile();
     $scope.uploadFile = function(id) {
         var selectedFile = $("#upload-file")[0].files[0]
         var folderInFirebaseStorage = "/files/"
@@ -148,7 +152,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
         return deferred.promise;
     }
     
-    this.sendData = function(indexOfTheRoom, email, message) {
+    this.sendData = function(indexOfTheRoom, email, message, downloadURL) {
         firebaseData.$loaded()
             .then(function(x) {
                 indexOfTheRoom = parseInt(indexOfTheRoom, 10)
@@ -156,7 +160,8 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                 messages[messages.length] = {
                     timestamp: new Date().valueOf(),
                     value: message,
-                    email: email
+                    email: email,
+                    downloadURL: downloadURL
                 }
                 firebaseData.$save(indexOfTheRoom)
                     .then(function(ref) {
