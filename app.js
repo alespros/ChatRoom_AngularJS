@@ -73,9 +73,14 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     }
     resetUploadFile();
     $scope.uploadFile = function(id) {
+        resetUploadFile();
         var selectedFile = $("#upload-file")[0].files[0]
-        var folderInFirebaseStorage = "/files/"
+        if (selectedFile.size > 52428800) {
+            $scope.uploadStatus = "Please choose a different file. The maximum size is 50 MB.";
+            return
+        }
         
+        var folderInFirebaseStorage = "/files/"        
         var promise = firebaseDatabase.uploadFile(selectedFile, folderInFirebaseStorage);
         promise.then(function(greeting) {
             //from deferred.resolve("message");
