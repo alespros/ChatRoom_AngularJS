@@ -25,6 +25,7 @@
 
                 <a href ng-click="openModal('custom-modal-2')">{{uploadImageButton}}</a>
                 <a href ng-click="openModal('custom-modal-3')">{{uploadFileButton}}</a>
+                <a href ng-click="openModal('custom-modal-4')">{{addYoutubeVideoButton}}</a>
             </div>
 
             <!--TODO: Handle enter key press-->
@@ -87,6 +88,23 @@
                 </p>
                 <button type="submit" class="btn btn-default">Nahraj soubor!</button>
                 <span>{{uploadFileStatus}}</span>
+
+            </form>
+        </div>
+        <div class="modal-background"></div>
+    </modal>
+    
+    <modal id="custom-modal-4">
+        <!--TODO: For some reason, the class of the next div can't be named "modal", idk why.-->
+        <div class="levelOne">
+            <form class="modal-body" ng-submit="addYoutubeVideo('custom-modal-4')">
+
+                <!--Everything inside the modal-body can be changed and the modal will work the same.-->
+                <h1>Add the Youtube vieo!</h1>
+                <p>
+                    <input type="url" id="add-youtube-video" ng-model="youtubeVideoURL">
+                </p>
+                <button type="submit" class="btn btn-default">Add the Youtube video!</button>
 
             </form>
         </div>

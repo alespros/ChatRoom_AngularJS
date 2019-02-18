@@ -153,6 +153,35 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
             $scope.uploadFileStatus = update;
         });
     }
+    
+    //Code for adding a link of the youtube video to the message
+    $scope.youtubeVideoURL = "";
+    $scope.addYoutubeVideoButton = "Add the link to Youtube";
+    
+    //check if the string contains the substring "youtube" or "youtu.be" (and report during submition of the form if not)
+    $scope.$watch('youtubeVideoURL',function(newVal,oldVal){
+        if ($scope.youtubeVideoURL === "") {
+            return;
+        }
+        
+        if ($scope.youtubeVideoURL.indexOf("youtube") === -1 && $scope.youtubeVideoURL.indexOf("youtu.be") === -1) {
+            document.getElementById("add-youtube-video").setCustomValidity("Sorry, but the link doesn't look like for a youtube video.");
+        } else {
+            document.getElementById("add-youtube-video").setCustomValidity("");
+        }
+    });
+    
+    $scope.addYoutubeVideo = function(id) {
+        document.getElementById("add-youtube-video").setCustomValidity("");
+        if ($scope.youtubeVideoURL === "") {
+            $scope.addYoutubeVideoButton = "Add the link to Youtube";
+            modalService.Close(id);
+        } else {
+            $scope.addYoutubeVideoButton = "Youtube video added!";
+            modalService.Close(id);
+        }
+    }
+    
 }]);
 
 chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", "$q", function($firebaseArray, $timeout, $location, $q) {
