@@ -24,7 +24,7 @@ chatApp.controller("homeController", ["$scope", "$location", "$cookies", "fireba
     
 }]);
 
-chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$firebaseArray", "firebaseDatabase", "$routeParams", "$q", "modalService", function($scope, $cookies, $timeout, $firebaseArray, firebaseDatabase, $routeParams, $q, modalService) {
+chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$firebaseArray", "firebaseDatabase", "$routeParams", "$q", "modalService", "$http", function($scope, $cookies, $timeout, $firebaseArray, firebaseDatabase, $routeParams, $q, modalService, $http) {
     $scope.email = $cookies.get("email");
     
     firebaseDatabase.getData($routeParams.number)
@@ -75,9 +75,55 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         }
     }
     
+    //Upload image by adding url
+    var resetUploadImage = function() {
+        $scope.uploadImageButton = "Upload image";
+        $scope.uploadImageStatus = "";
+        $scope.downloadImageUrl = "";
+    }
+    resetUploadImage();
+    $scope.uploadImage = function(id) {
+        resetUploadImage();
+        
+        $http({
+          method: 'GET',
+          url: $scope.uploadImageURL, //type is String
+          responseType: 'arraybuffer'
+        }).then(function successCallback(response) {
+            // this callback will be called asynchronously
+            // when the response is available
+            var blob = new Blob([response.data], {type: 'image/jpeg'});
+            //second argument of the following File() constructor specifies the name of the file
+            var fileOfBlob = new File([blob], $scope.uploadImageURL.substring($scope.uploadImageURL.lastIndexOf('/')+1));
+            
+            var folderInFirebaseStorage = "/images/"        
+            var promise = firebaseDatabase.uploadFile(fileOfBlob, folderInFirebaseStorage);
+            promise.then(function(greeting) {
+                //from deferred.resolve("message");
+                $scope.downloadImageURL = greeting;
+                $scope.uploadImageButton = "Image added to the message.";
+                $scope.uploadImageStatus = "Image added to the message.";
+                modalService.Close(id);
+            }, function(reason) {
+                //from deferred.reject("message");
+                $scope.uploadImageStatus = reason;
+            }, function(update) {
+                //from deferred.notify("message");
+                $scope.uploadImageStatus = update;
+            });
+            
+          }, function errorCallback(response) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+            console.log("Error: ", response)
+          });
+        
+        
+    }
+    
     //Upload file from local storage
     var resetUploadFile = function() {
-        $scope.uploadFileButton = "Upload file"
+        $scope.uploadFileButton = "Upload file";
         $scope.uploadFileStatus = "";
         $scope.downloadFileURL = "";
     }
@@ -201,7 +247,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
         if(selectedFile === undefined) {
             console.log("Select the file, please.")
         } else {
-            var filename = selectedFile.name;
+            var filename = new Date().valueOf().toString() + "_" + selectedFile.name;
             var storageRef = firebase.storage().ref(folderInFirebaseStorage + filename);
 
             var uploadTask = storageRef.put(selectedFile);
