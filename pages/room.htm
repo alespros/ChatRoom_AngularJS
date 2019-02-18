@@ -23,8 +23,8 @@
                 <a href ng-click="richtext('monospace')">Monospace</a>
                 <a href ng-click="richtext('defaultfont')">Default font</a> <!--Set in the "body {}" in the style.css file.-->
 
-                <a href ng-click="openModal('custom-modal-3')">{{uploadImageButton}}</a>
-                <a href ng-click="openModal('custom-modal-2')">{{uploadFileButton}}</a>
+                <a href ng-click="openModal('custom-modal-2')">{{uploadImageButton}}</a>
+                <a href ng-click="openModal('custom-modal-3')">{{uploadFileButton}}</a>
             </div>
 
             <!--TODO: Handle enter key press-->
@@ -60,15 +60,15 @@
     <modal id="custom-modal-2">
         <!--TODO: For some reason, the class of the next div can't be named "modal", idk why.-->
         <div class="levelOne">
-            <form class="modal-body" ng-submit="uploadFile('custom-modal-2')">
+            <form class="modal-body" ng-submit="uploadImage('custom-modal-2')">
 
                 <!--Everything inside the modal-body can be changed and the modal will work the same.-->
-                <h1>Upload the file!</h1>
+                <h1>Upload the image from URL!</h1>
                 <p>
-                    <input type="file" id="upload-file">
+                    <input type="url" id="upload-image" ng-model="uploadImageURL">
                 </p>
-                <button type="submit" class="btn btn-default">Nahraj soubor!</button>
-                <span>{{uploadFileStatus}}</span>
+                <button type="submit" class="btn btn-default">Upload image!</button>
+                <span>{{uploadImageStatus}}</span>
 
             </form>
         </div>
@@ -78,15 +78,15 @@
     <modal id="custom-modal-3">
         <!--TODO: For some reason, the class of the next div can't be named "modal", idk why.-->
         <div class="levelOne">
-            <form class="modal-body" ng-submit="uploadImage('custom-modal-3')">
+            <form class="modal-body" ng-submit="uploadFile('custom-modal-3')">
 
                 <!--Everything inside the modal-body can be changed and the modal will work the same.-->
-                <h1>Upload the image from URL!</h1>
+                <h1>Upload the file!</h1>
                 <p>
-                    <input type="url" id="upload-image" ng-model="uploadImageURL">
+                    <input type="file" id="upload-file">
                 </p>
-                <button type="submit" class="btn btn-default">Upload image!</button>
-                <span>{{uploadImageStatus}}</span>
+                <button type="submit" class="btn btn-default">Nahraj soubor!</button>
+                <span>{{uploadFileStatus}}</span>
 
             </form>
         </div>
