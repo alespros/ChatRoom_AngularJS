@@ -38,8 +38,9 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     }
     
     $scope.sendMessage = function() {
-        var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadFileURL)
+        var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadImageURL, $scope.downloadFileURL)
         $('.mycontenteditable').empty();
+        resetUploadImage();
         resetUploadFile();
         
         promise.then(function() {
@@ -79,7 +80,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     var resetUploadImage = function() {
         $scope.uploadImageButton = "Upload image";
         $scope.uploadImageStatus = "";
-        $scope.downloadImageUrl = "";
+        $scope.downloadImageURL = "";
     }
     resetUploadImage();
     $scope.uploadImage = function(id) {
@@ -213,7 +214,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
         return deferred.promise;
     }
     
-    this.sendData = function(indexOfTheRoom, email, message, downloadFileURL) {
+    this.sendData = function(indexOfTheRoom, email, message, downloadImageURL, downloadFileURL) {
         var deferred = $q.defer();
         
         firebaseData.$loaded()
@@ -224,6 +225,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                     timestamp: new Date().valueOf(),
                     value: message,
                     email: email,
+                    downloadImageURL: downloadImageURL,
                     downloadFileURL: downloadFileURL
                 }
                 firebaseData.$save(indexOfTheRoom)
