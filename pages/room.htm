@@ -12,6 +12,9 @@
                         <img ng-src="{{message.downloadImageURL}}" style="max-width:500px; border: 1px solid #0000001c;" />
                     </a>
                 </div>
+                <div ng-show="message.youtubeVideoURL">
+                    <iframe width="560" height="315" ng-src="{{trustSrc(message.youtubeVideoURL)}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
         

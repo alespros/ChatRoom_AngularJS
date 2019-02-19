@@ -24,7 +24,7 @@ chatApp.controller("homeController", ["$scope", "$location", "$cookies", "fireba
     
 }]);
 
-chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$firebaseArray", "firebaseDatabase", "$routeParams", "$q", "modalService", "$http", function($scope, $cookies, $timeout, $firebaseArray, firebaseDatabase, $routeParams, $q, modalService, $http) {
+chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$firebaseArray", "firebaseDatabase", "$routeParams", "$q", "modalService", "$http", "$sce", function($scope, $cookies, $timeout, $firebaseArray, firebaseDatabase, $routeParams, $q, modalService, $http, $sce) {
     $scope.email = $cookies.get("email");
     
     firebaseDatabase.getData($routeParams.number)
@@ -32,16 +32,21 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         $scope.firebaseData = data;
     })
     
+    $scope.trustSrc = function(src) {
+        return $sce.trustAsResourceUrl(src);
+      };
+    
     $scope.finishedRenderingData = function() {
         var objDiv = document.getElementById("messages-container");
         objDiv.scrollTop = objDiv.scrollHeight;
     }
     
     $scope.sendMessage = function() {
-        var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadImageURL, $scope.downloadFileURL)
+        var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadImageURL, $scope.downloadFileURL, $scope.youtubeVideoURL)
         $('.mycontenteditable').empty();
         resetUploadImage();
         resetUploadFile();
+        $scope.youtubeVideoURL = "";
         
         promise.then(function() {
             var objDiv = document.getElementById("messages-container");
@@ -243,7 +248,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
         return deferred.promise;
     }
     
-    this.sendData = function(indexOfTheRoom, email, message, downloadImageURL, downloadFileURL) {
+    this.sendData = function(indexOfTheRoom, email, message, downloadImageURL, downloadFileURL, youtubeVideoURL) {
         var deferred = $q.defer();
         
         firebaseData.$loaded()
@@ -255,7 +260,8 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                     value: message,
                     email: email,
                     downloadImageURL: downloadImageURL,
-                    downloadFileURL: downloadFileURL
+                    downloadFileURL: downloadFileURL,
+                    youtubeVideoURL: youtubeVideoURL
                 }
                 firebaseData.$save(indexOfTheRoom)
                     .then(function(ref) {
