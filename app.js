@@ -47,6 +47,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         resetUploadImage();
         resetUploadFile();
         $scope.youtubeVideoURL = "";
+        $scope.addYoutubeVideoButton = "Add the link to Youtube";
         
         promise.then(function() {
             var objDiv = document.getElementById("messages-container");
@@ -182,6 +183,15 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
             $scope.addYoutubeVideoButton = "Add the link to Youtube";
             modalService.Close(id);
         } else {
+            if ($scope.youtubeVideoURL.indexOf("/embed/") === -1) {
+                if ($scope.youtubeVideoURL.indexOf("youtube") !== -1) {
+                    var video = $scope.youtubeVideoURL.substring($scope.youtubeVideoURL.indexOf("watch?v=") + 8);
+                } else { //else if ($scope.youtubeVideoURL.indexOf("youtu.be") !== -1)
+                    var video = $scope.youtubeVideoURL.substring($scope.youtubeVideoURL.lastIndexOf('/')+1)
+                }
+                $scope.youtubeVideoURL = "https://www.youtube.com/embed/" + video;
+            }
+            
             $scope.addYoutubeVideoButton = "Youtube video added!";
             modalService.Close(id);
         }
