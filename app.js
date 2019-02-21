@@ -42,13 +42,35 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     }
     
     $scope.sendMessage = function() {
-        var message = $('.mycontenteditable').html();
+        //Add spaces around the message for better understanding whether it starts or ends with the emoticon text
+        var message = " " + $('.mycontenteditable').html() + " ";
         
-        //Replace emoticon shortcuts by their signs
+        //Parse the text of the emoticon by the actual emoticons
         Object.keys(emojiMap).forEach(function(key) {
-            while (message.indexOf(key) !== -1) {
-                message = message.replace(key, emojiMap[key]);
+            //Replace only if the text is surrounded by specified signs
+            var smartKeysMap = [[" ", " "], [" ", ","], [" ", "."], [" ", "!"], [" ", "?"]];
+            smartKeysMap.forEach(function(smartKey, index) {
+                while (message.indexOf(smartKeysMap[index][0] + key + smartKeysMap[index][1]) !== -1) {
+                    message = message.replace(
+                        smartKeysMap[index][0] + key + smartKeysMap[index][1],
+                        smartKeysMap[index][0] + emojiMap[key] + smartKeysMap[index][1]);
+                }
+            })
+            
+            //Replace if the text of the emoticon is written multiple times after each other
+            while (message.indexOf(key + key) !== -1) {
+                if (message.indexOf(key + key + key) !== -1) {
+                    if (message.indexOf(key + key + key + key) !== -1) {
+                        message = message.replace(key+key, emojiMap[key]+emojiMap[key]);
+                    } else {
+                        message = message.replace(key+key+key, emojiMap[key]+emojiMap[key]+emojiMap[key]);
+                    }
+                } else {
+                    message = message.replace(key+key, emojiMap[key]+emojiMap[key]);
+                }
             }
+            
+            message = message.trim();            
         });
 
         var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, message, $scope.downloadImageURL, $scope.downloadFileURL, $scope.youtubeVideoURL)
