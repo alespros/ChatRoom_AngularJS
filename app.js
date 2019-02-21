@@ -31,7 +31,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     .then(function(data) {
         $scope.firebaseData = data;
     })
-    
+
     $scope.trustSrc = function(src) {
         return $sce.trustAsResourceUrl(src);
       };
@@ -239,6 +239,43 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         document.execCommand("insertHTML", false, emoji);
         modalService.Close(id);
     }
+    
+    $scope.exportData = function(id) {
+        var data = $scope.firebaseData;
+        var csvRows = [];
+        var headers = [];
+        
+        //Put the "normal" headers into the first item of the csvRows array
+        Object.keys(data[0]).forEach(function(key) {
+            if (key.charAt(0) !== "$") {
+                headers.push(key)
+            }
+        })
+        csvRows.push('"' + headers.join('","') + '"');
+        
+        //Based on the headers selected, for every message, take the values of the object and put them as a new item of the csvRows array
+        data.forEach(function(message) {            
+            var values = headers.map(function(header) {
+                //Replace " with "", so that they can be shown in the css
+                var escaped = ("" + message[header]).replace(/"/g, '\""');
+                return escaped;
+            });
+            csvRows.push('"' + values.join('","') + '"');
+        })
+        
+        csvRows = csvRows.join("\n");
+        
+        //Create and download the csv file
+        var blob = new Blob([csvRows], { type: "text/csv"});
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.setAttribute("hidden", "");
+        a.setAttribute("href", url);
+        a.setAttribute("download", "download.csv");
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
 }]);
 
 chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", "$q", function($firebaseArray, $timeout, $location, $q) {
@@ -260,9 +297,14 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
     this.createChatRoom = function() {
         firebaseData.$loaded()
             .then(function(x) {     
-                firebaseData.$add([{       
+                firebaseData.$add([{
+                    //TODO: make the object constructor for it as a similar object is used 3 times
                     timestamp: new Date().valueOf(),
-                    value: "Welcome to the new chat."
+                    value: "Welcome to the new chat.",
+                    email: "",
+                    downloadImageURL: "",
+                    downloadFileURL: "",
+                    youtubeVideoURL: ""
                 }])
                 .then(function(subref) {
 
@@ -272,7 +314,11 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
 
                     firebaseData[indexOfTheRoom][1] = {
                         timestamp: new Date().valueOf(),
-                        value: "The link to the room is: " + $location.absUrl() + "room" + indexOfTheRoom
+                        value: "The link to the room is: " + $location.absUrl() + "room" + indexOfTheRoom,
+                        email: "",
+                        downloadImageURL: "",
+                        downloadFileURL: "",
+                        youtubeVideoURL: ""
                     }
 
                     firebaseData.$save(indexOfTheRoom).then(function(ref) {
