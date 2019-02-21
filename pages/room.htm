@@ -138,6 +138,13 @@
 
                 <!--Everything inside the modal-body can be changed and the modal will work the same.-->
                 <h1>Export data!</h1>
+                <p>
+                    Choose the type of the file: 
+                    <select ng-model="exportChatFortmat">
+                        <option value="csv">CSV file</option>
+                        <option value="txt">Text file</option>
+                      </select>
+                </p>
                 <button type="submit" class="btn btn-default">Export data!</button>
             </form>
         </div>

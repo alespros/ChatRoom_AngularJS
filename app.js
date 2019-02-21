@@ -266,16 +266,18 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         csvRows = csvRows.join("\n");
         
         //Create and download the csv file
-        var blob = new Blob([csvRows], { type: "text/csv"});
+        var blob = new Blob([csvRows], { type: "text/" + $scope.exportChatFortmat});
         var url = window.URL.createObjectURL(blob);
         var a = document.createElement("a");
         a.setAttribute("hidden", "");
         a.setAttribute("href", url);
-        a.setAttribute("download", "download.csv");
+        a.setAttribute("download", "download." + $scope.exportChatFortmat);
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
     }
+    
+    $scope.exportChatFortmat = "csv"
 }]);
 
 chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", "$q", function($firebaseArray, $timeout, $location, $q) {
