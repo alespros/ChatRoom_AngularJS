@@ -197,6 +197,11 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         }
     }
     
+    $scope.emojis = ["😃","😅","🤣","😂","🙂","😉","😊","😇","😍","😘","😜","😎","😨","😭"];
+    $scope.addEmoji = function(id, emoji) {
+        document.execCommand("insertHTML", false, emoji);
+        modalService.Close(id);
+    }
 }]);
 
 chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", "$q", function($firebaseArray, $timeout, $location, $q) {
