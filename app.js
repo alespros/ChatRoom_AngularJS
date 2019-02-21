@@ -42,7 +42,16 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     }
     
     $scope.sendMessage = function() {
-        var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, $('.mycontenteditable').html(), $scope.downloadImageURL, $scope.downloadFileURL, $scope.youtubeVideoURL)
+        var message = $('.mycontenteditable').html();
+        
+        //Replace emoticon shortcuts by their signs
+        Object.keys(emojiMap).forEach(function(key) {
+            while (message.indexOf(key) !== -1) {
+                message = message.replace(key, emojiMap[key]);
+            }
+        });
+
+        var promise = firebaseDatabase.sendData($routeParams.number, $scope.email, message, $scope.downloadImageURL, $scope.downloadFileURL, $scope.youtubeVideoURL)
         $('.mycontenteditable').empty();
         resetUploadImage();
         resetUploadFile();
@@ -198,6 +207,12 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     }
     
     $scope.emojis = ["😃","😅","🤣","😂","🙂","😉","😊","😇","😍","😘","😜","😎","😨","😭"];
+    var emojiMap = {
+        ":D":"😃",
+        ":)":"🙂",
+        ";)":"😉",
+        ":P":"😜",
+    }
     $scope.addEmoji = function(id, emoji) {
         document.execCommand("insertHTML", false, emoji);
         modalService.Close(id);
