@@ -9,7 +9,7 @@
                 
                 <div ng-show="message.downloadImageURL">
                     <a ng-href="{{message.downloadImageURL}}">
-                        <img ng-src="{{message.downloadImageURL}}" style="max-width:500px; border: 1px solid #0000001c;" />
+                        <img ng-src="{{message.downloadImageURL}}" style="max-width:500px; border: 1px solid #0000001c;" id="image{{$index}}" />
                     </a>
                 </div>
                 <div ng-show="message.youtubeVideoURL">

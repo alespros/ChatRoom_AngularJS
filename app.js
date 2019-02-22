@@ -254,11 +254,48 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         csvRows.push('"' + headers.join('","') + '"');
         
         //Based on the headers selected, for every message, take the values of the object and put them as a new item of the csvRows array
-        data.forEach(function(message) {            
+        data.forEach(function(message, index) {            
             var values = headers.map(function(header) {
-                //Replace " with "", so that they can be shown in the css
-                var escaped = ("" + message[header]).replace(/"/g, '\""');
-                return escaped;
+                if (header === "downloadImageURL") {                
+                    // Simple GET request example:
+                    $http({
+                        method: 'GET',
+                        url: message[header],
+                        responseType: 'arraybuffer'
+                    }).then(function successCallback(response) {
+                        // this callback will be called asynchronously
+                        // when the response is available
+                        var sourceImg = $("#image" + index);
+                        var width = sourceImg.width(); //in HTML style="max-width:500px;"
+                        var height = width * sourceImg.height() / sourceImg.width();
+                        
+                        var blob = new Blob([response.data], {type: 'image/jpeg'});                    
+                        var reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = function() {
+                            var img = new Image();
+                            img.src = reader.result;
+                            
+                            img.onload = () => {
+                                var canvas = document.createElement('canvas');
+                                canvas.width = width;
+                                canvas.height = height;
+                                var ctx = canvas.getContext('2d');
+                                // img.width and img.height will contain the original dimensions
+                                ctx.drawImage(img, 0, 0, width, height);
+                                console.log(canvas.toDataURL())
+                            }
+                        }
+                      }, function errorCallback(response) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                        console.log(response);
+                      });
+                } else {
+                    //Replace " with "", so that they can be shown in the css
+                    var escaped = ("" + message[header]).replace(/"/g, '\""');
+                    return escaped;
+                }
             });
             csvRows.push('"' + values.join('","') + '"');
         })
