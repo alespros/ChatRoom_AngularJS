@@ -240,6 +240,74 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         modalService.Close(id);
     }
     
+    $scope.imagesBase64 = {};
+    $scope.imagesBase64BeingLoaded = false;
+    $scope.loadImages = function() {
+        $scope.imagesBase64BeingLoaded = true;
+        var data = $scope.firebaseData;
+        var imageData = {};
+        var sizeOfImageData = 0;
+        $scope.imageDataBase64 = {}
+        var sizeOfImageBase64 = 0;
+        
+        data.forEach(function(row, index) {
+            var url = row["downloadImageURL"];
+            
+            if (url !== "") {
+                imageData[index] = row["downloadImageURL"];
+            }
+        })
+        
+        //Get the size of the object which contains all the urls to the images
+        for (key in imageData) {
+            if (imageData.hasOwnProperty(key)) {
+                sizeOfImageData++
+            };
+        }
+        
+        for (key in imageData) {        
+            $http({
+                method: 'GET',
+                url: imageData[key],
+                responseType: 'arraybuffer',
+                key: key
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                var sourceImg = $("#image" + key);
+                var width = 100 //sourceImg.width(); //in HTML style="max-width:500px;"
+                var height = width * sourceImg.height() / sourceImg.width();
+
+                var blob = new Blob([response.data], {type: 'image/jpeg'});                    
+                var reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function() {
+                    var img = new Image();
+                    img.src = reader.result;
+
+                    img.onload = () => {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        var ctx = canvas.getContext('2d');
+                        // img.width and img.height will contain the original dimensions
+                        ctx.drawImage(img, 0, 0, width, height);
+                        $scope.imagesBase64[response.config.key] = canvas.toDataURL()
+                        sizeOfImageBase64++
+                        if (sizeOfImageBase64 === sizeOfImageData) {
+                            $scope.imagesBase64BeingLoaded = false;
+                            $scope.$apply($scope.imageDataBase64)
+                        }
+                    }
+                }
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                console.log(response);
+            });
+        }
+    }
+    
     $scope.exportData = function(id) {
         var data = $scope.firebaseData;
         var csvRows = [];
@@ -252,50 +320,13 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
             }
         })
         csvRows.push('"' + headers.join('","') + '"');
-        
+
         //Based on the headers selected, for every message, take the values of the object and put them as a new item of the csvRows array
         data.forEach(function(message, index) {            
             var values = headers.map(function(header) {
-                if (header === "downloadImageURL") {                
-                    // Simple GET request example:
-                    $http({
-                        method: 'GET',
-                        url: message[header],
-                        responseType: 'arraybuffer'
-                    }).then(function successCallback(response) {
-                        // this callback will be called asynchronously
-                        // when the response is available
-                        var sourceImg = $("#image" + index);
-                        var width = sourceImg.width(); //in HTML style="max-width:500px;"
-                        var height = width * sourceImg.height() / sourceImg.width();
-                        
-                        var blob = new Blob([response.data], {type: 'image/jpeg'});                    
-                        var reader = new FileReader();
-                        reader.readAsDataURL(blob);
-                        reader.onloadend = function() {
-                            var img = new Image();
-                            img.src = reader.result;
-                            
-                            img.onload = () => {
-                                var canvas = document.createElement('canvas');
-                                canvas.width = width;
-                                canvas.height = height;
-                                var ctx = canvas.getContext('2d');
-                                // img.width and img.height will contain the original dimensions
-                                ctx.drawImage(img, 0, 0, width, height);
-                                console.log(canvas.toDataURL())
-                            }
-                        }
-                      }, function errorCallback(response) {
-                        // called asynchronously if an error occurs
-                        // or server returns response with an error status.
-                        console.log(response);
-                      });
-                } else {
-                    //Replace " with "", so that they can be shown in the css
-                    var escaped = ("" + message[header]).replace(/"/g, '\""');
-                    return escaped;
-                }
+                //Replace " with "", so that they can be shown in the css
+                var escaped = ("" + message[header]).replace(/"/g, '\""');
+                return escaped;
             });
             csvRows.push('"' + values.join('","') + '"');
         })
