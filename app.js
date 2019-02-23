@@ -312,6 +312,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         var data = $scope.firebaseData;
         var csvRows = [];
         var headers = [];
+        var imagesAsBase64 = false;
         
         //Put the "normal" headers into the first item of the csvRows array
         Object.keys(data[0]).forEach(function(key) {
@@ -320,13 +321,29 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
             }
         })
         csvRows.push('"' + headers.join('","') + '"');
-
+        
+        //If the images are loaded as base64, if the $scope.imagesBase64 isn't an empty object
+        if (!angular.equals({}, $scope.imagesBase64)) {
+            imagesAsBase64 = true;
+        }
+            
         //Based on the headers selected, for every message, take the values of the object and put them as a new item of the csvRows array
         data.forEach(function(message, index) {            
             var values = headers.map(function(header) {
-                //Replace " with "", so that they can be shown in the css
-                var escaped = ("" + message[header]).replace(/"/g, '\""');
-                return escaped;
+                if (header === "downloadImageURL") {
+                    if (imagesAsBase64) {
+                        //If the images is present in the message, return its base64 representation
+                        if($scope.imagesBase64.hasOwnProperty(index)) {
+                            return $scope.imagesBase64[index]
+                        }
+                    } else {
+                        return message[header]
+                    }
+                } else {
+                    //Replace " with "", so that they can be shown in the css
+                    var escaped = ("" + message[header]).replace(/"/g, '\""');
+                    return escaped;
+                }                
             });
             csvRows.push('"' + values.join('","') + '"');
         })
