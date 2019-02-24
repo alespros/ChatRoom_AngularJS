@@ -245,6 +245,10 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     $scope.imagesBase64BeingLoaded = false;
     //TODO: Return when no images are present in the messages
     $scope.loadImages = function() {
+        if (!confirm("The images will be saved as a text value which can be unsafe, do you wish to continue?")) {
+            return;
+        }
+        
         $scope.imagesBase64BeingLoaded = true;
         var data = $scope.firebaseData;
         var imageData = {};
@@ -312,6 +316,10 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     $scope.filesBinary = {};
     $scope.filesBinaryBeingLoaded = false;
     $scope.loadFiles = function() {
+        if (!confirm("The files will be saved as a text value which can be unsafe, do you wish to continue?")) {
+            return;
+        }
+        
         $scope.filesBinaryBeingLoaded = true;
         var data = $scope.firebaseData;
         var filesData = {};
