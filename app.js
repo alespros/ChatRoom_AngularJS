@@ -34,7 +34,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
 
     $scope.trustSrc = function(src) {
         return $sce.trustAsResourceUrl(src);
-      };
+    };
     
     $scope.finishedRenderingData = function() {
         var objDiv = document.getElementById("messages-container");
@@ -509,6 +509,12 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
     }
     
     $scope.exportChatFortmat = "csv"
+    
+    $scope.deleteMessageDialog = function(index) {
+        if (confirm("Do you want to delete the message?")) {
+            firebaseDatabase.deleteMessageFromView($routeParams.number, index)
+        }
+    }
 }]);
 
 chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", "$q", function($firebaseArray, $timeout, $location, $q) {
@@ -532,6 +538,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
             .then(function(x) {     
                 firebaseData.$add([{
                     //TODO: make the object constructor for it as a similar object is used 3 times
+                    messageDeleted: false,
                     timestamp: new Date().valueOf(),
                     value: "Welcome to the new chat.",
                     email: "",
@@ -546,6 +553,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                     var indexOfTheRoom = firebaseData.$indexFor(idOfTheRoom);
 
                     firebaseData[indexOfTheRoom][1] = {
+                        messageDeleted: false,
                         timestamp: new Date().valueOf(),
                         value: "The link to the room is: " + $location.absUrl() + "room" + indexOfTheRoom,
                         email: "",
@@ -587,6 +595,7 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                 indexOfTheRoom = parseInt(indexOfTheRoom, 10)
                 var messages = firebaseData[indexOfTheRoom]
                 messages[messages.length] = {
+                    messageDeleted: false,
                     timestamp: new Date().valueOf(),
                     value: message,
                     email: email,
@@ -594,6 +603,30 @@ chatApp.service("firebaseDatabase", ["$firebaseArray", "$timeout", "$location", 
                     downloadFileURL: downloadFileURL,
                     youtubeVideoURL: youtubeVideoURL
                 }
+                firebaseData.$save(indexOfTheRoom)
+                    .then(function(ref) {
+                        //Do something
+                        deferred.resolve();
+                    })
+                    .catch(function(error) {
+                        console.log("Error:", error)
+                    });
+            })
+            .catch(function(error) {
+                console.log("Error:", error);
+            });
+        return deferred.promise;
+    }
+    
+    this.deleteMessageFromView = function(indexOfTheRoom, index) {
+        var deferred = $q.defer();
+        
+        firebaseData.$loaded()
+            .then(function() {
+                indexOfTheRoom = parseInt(indexOfTheRoom, 10)
+                var messages = firebaseData[indexOfTheRoom]
+                var message = messages[index]
+                message["messageDeleted"] = true
                 firebaseData.$save(indexOfTheRoom)
                     .then(function(ref) {
                         //Do something

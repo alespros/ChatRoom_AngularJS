@@ -1,7 +1,8 @@
 <div>
     <div id="main-container">
         <div id="messages-container">
-            <div ng-repeat="message in firebaseData" ng-init="$last && finishedRenderingData()">
+            <div ng-repeat="message in firebaseData" ng-init="$last && finishedRenderingData()" ng-if="!message.messageDeleted">
+                <span class="btn" ng-click="deleteMessageDialog($index)">X</span>
                 <span>{{message.email}} </span>
                 <span>{{message.timestamp | date: 'dd. MM. yyyy, H:mm'}}: </span>
                 <span ng-bind-html="message.value"></span>
