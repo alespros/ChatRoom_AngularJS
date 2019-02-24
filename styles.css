@@ -11,7 +11,7 @@ html, body {
 #messages-container {
     position:absolute;
     top:52px;           /*Set based on the header height.*/
-    bottom:60px;        /*Set based on the bottom div height.*/
+    bottom:68px;        /*Set based on the bottom div height.*/
     left:0px;
     right:0px;
     overflow:auto;
@@ -20,7 +20,7 @@ html, body {
 #bottom-container {
     position:absolute;
     bottom:0px;
-    height:60px;
+    /* height:60px; */
     left:0px;
     right:0px;
     overflow:hidden;

@@ -20,18 +20,18 @@
         </div>
         
         <div id="bottom-container">
-            <div>
-                <a href ng-click="richtext('bold')">Bold</a>
-                <a href ng-click="richtext('italic')">Italic</a>
-                <a href ng-click="richtext('underline')">Underline</a>
-                <a href ng-click="richtext('monospace')">Monospace</a>
-                <a href ng-click="richtext('defaultfont')">Default font</a> <!--Set in the "body {}" in the style.css file.-->
+            <div class="btn-group">
+                <a href class="btn btn-default" ng-click="richtext('bold')">Bold</a>
+                <a href class="btn btn-default" ng-click="richtext('italic')">Italic</a>
+                <a href class="btn btn-default" ng-click="richtext('underline')">Underline</a>
+                <a href class="btn btn-default" ng-click="richtext('monospace')">Monospace</a>
+                <a href class="btn btn-default" ng-click="richtext('defaultfont')">Default font</a> <!--Set in the "body {}" in the style.css file.-->
 
-                <a href ng-click="openModal('custom-modal-2')">{{uploadImageButton}}</a>
-                <a href ng-click="openModal('custom-modal-3')">{{uploadFileButton}}</a>
-                <a href ng-click="openModal('custom-modal-4')">{{addYoutubeVideoButton}}</a>
-                <a href ng-click="openModal('custom-modal-5')">Add emoji</a>
-                <a href ng-click="openModal('custom-modal-6')">Export data</a>
+                <a href class="btn btn-default" ng-click="openModal('custom-modal-2')">{{uploadImageButton}}</a>
+                <a href class="btn btn-default" ng-click="openModal('custom-modal-3')">{{uploadFileButton}}</a>
+                <a href class="btn btn-default" ng-click="openModal('custom-modal-4')">{{addYoutubeVideoButton}}</a>
+                <a href class="btn btn-default" ng-click="openModal('custom-modal-5')">Add emoji</a>
+                <a href class="btn btn-default" ng-click="openModal('custom-modal-6')">Export data</a>
             </div>
 
             <!--TODO: Handle enter key press-->
