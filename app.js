@@ -240,21 +240,22 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         modalService.Close(id);
     }
     
+    //Load images as base64
     $scope.imagesBase64 = {};
     $scope.imagesBase64BeingLoaded = false;
+    //TODO: Return when no images are present in the messages
     $scope.loadImages = function() {
         $scope.imagesBase64BeingLoaded = true;
         var data = $scope.firebaseData;
         var imageData = {};
         var sizeOfImageData = 0;
-        $scope.imageDataBase64 = {}
         var sizeOfImageBase64 = 0;
         
         data.forEach(function(row, index) {
             var url = row["downloadImageURL"];
             
             if (url !== "") {
-                imageData[index] = row["downloadImageURL"];
+                imageData[index] = url;
             }
         })
         
@@ -295,8 +296,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
                         $scope.imagesBase64[response.config.key] = canvas.toDataURL()
                         sizeOfImageBase64++
                         if (sizeOfImageBase64 === sizeOfImageData) {
-                            $scope.imagesBase64BeingLoaded = false;
-                            $scope.$apply($scope.imageDataBase64)
+                            $scope.$apply($scope.imagesBase64BeingLoaded = false)
                         }
                     }
                 }
@@ -308,11 +308,82 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         }
     }
     
+    //Load files as binary data
+    $scope.filesBinary = {};
+    $scope.filesBinaryBeingLoaded = false;
+    $scope.loadFiles = function() {
+        $scope.filesBinaryBeingLoaded = true;
+        var data = $scope.firebaseData;
+        var filesData = {};
+        var sizeOfFilesData = 0;
+        var sizeOfFilesBinary = 0;
+        
+        data.forEach(function(row, index) {
+            var url = row["downloadFileURL"];
+            
+            if (url !== "") {
+                filesData[index] = url;
+            }
+        })
+        
+        //Get the size of the object which contains all the urls to the files
+        for (key in filesData) {
+            if (filesData.hasOwnProperty(key)) {
+                sizeOfFilesData++
+            };
+        }
+        
+        for (key in filesData) {        
+            $http({
+                method: 'GET',
+                url: filesData[key],
+                responseType: 'arraybuffer',
+                key: key
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+
+                var byteArray = new Uint8Array(response.data);
+                var arrayAsString = byteArray.join(".");
+                
+//                //Use this code to get the file back from the String which is saved in the CSV file
+//                var stringAsArray = arrayAsString.split(".");
+//                var stringAsByteArray = stringAsArray.map(function(elem) {
+//                    return parseInt(elem, 10);
+//                })
+//                var myUnit8Array = new Uint8Array(stringAsByteArray);
+//                var newBlob = new Blob([myUnit8Array])
+//                
+//                var url = window.URL.createObjectURL(newBlob);
+//                var a = document.createElement("a");
+//                a.setAttribute("hidden", "");
+//                a.setAttribute("href", url);
+//                //TODO: Get the file extension from the original file instead of setting up the automatic ".txt"
+//                a.setAttribute("download", "download." + "txt");
+//                document.body.appendChild(a);
+//                a.click();
+//                document.body.removeChild(a);
+                
+                $scope.filesBinary[response.config.key] = arrayAsString
+                sizeOfFilesBinary++
+                if (sizeOfFilesBinary === sizeOfFilesData) {
+                    $scope.filesBinaryBeingLoaded = false
+                }
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                console.log(response);
+            });
+        }
+    }
+    
+    //Export data based on the configuration which was defined
     $scope.exportData = function(id) {
         var data = $scope.firebaseData;
         var csvRows = [];
         var headers = [];
         var imagesAsBase64 = false;
+        var filesAsBinary = false;
         
         //Put the "normal" headers into the first item of the csvRows array
         Object.keys(data[0]).forEach(function(key) {
@@ -326,15 +397,29 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         if (!angular.equals({}, $scope.imagesBase64)) {
             imagesAsBase64 = true;
         }
+        
+        //If the files are loaded as binary, if the $scope.filesBinary isn't an empty object
+        if (!angular.equals({}, $scope.filesBinary)) {
+            filesAsBinary = true;
+        }
             
         //Based on the headers selected, for every message, take the values of the object and put them as a new item of the csvRows array
         data.forEach(function(message, index) {            
             var values = headers.map(function(header) {
                 if (header === "downloadImageURL") {
                     if (imagesAsBase64) {
-                        //If the images is present in the message, return its base64 representation
+                        //If the image is present in the message, return its base64 representation
                         if($scope.imagesBase64.hasOwnProperty(index)) {
                             return $scope.imagesBase64[index]
+                        }
+                    } else {
+                        return message[header]
+                    }
+                } else if (header === "downloadFileURL") {
+                    if (filesAsBinary) {
+                        //If the file is present in the message, return its binary representation
+                        if($scope.filesBinary.hasOwnProperty(index)) {
+                            return $scope.filesBinary[index]
                         }
                     } else {
                         return message[header]
