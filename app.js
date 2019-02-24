@@ -385,6 +385,44 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         }
     }
     
+    //Convert emojis to the text representation with the markdown
+    $scope.newMessagesWithEmojiMarkdown = {};
+    $scope.emojisBeingConverted = false;
+    $scope.emojisAsMarkdown = function() {
+        $scope.emojisBeingConverted = true;
+        var data = $scope.firebaseData;
+        
+        data.forEach(function(row, index) {
+            var message = row.value;
+            
+            var conversionMapForEmojis = {
+                "😃": ":smiley:",
+                "😅": ":sweat_smile:",
+                "🤣": ":extreme_smile:",
+                "😂": ":joy:",
+                "🙂": ":simple_smile:",
+                "😉": ":wink:",
+                "😊": ":blush:",
+                "😇": ":innocent:",
+                "😍": ":heart_eyes:",
+                "😘": ":kissing_heart:",
+                "😜": ":stuck_out_tongue_winking_eye:",
+                "😎": ":sunglasses:",
+                "😨": ":fearful:",
+                "😭": ":sob:"
+            }
+            
+            for (key in conversionMapForEmojis) {
+                //Replace all the occurences of the emoji with its markdown
+                message = message.split(key).join(conversionMapForEmojis[key]);
+            }
+
+            $scope.newMessagesWithEmojiMarkdown[index] = message
+        })
+        
+        $scope.emojisBeingConverted = false;
+    }
+    
     //Export data based on the configuration which was defined
     $scope.exportData = function(id) {
         var data = $scope.firebaseData;
@@ -392,6 +430,7 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         var headers = [];
         var imagesAsBase64 = false;
         var filesAsBinary = false;
+        var emoticonsAsMarkdowns = false;
         
         //Put the "normal" headers into the first item of the csvRows array
         Object.keys(data[0]).forEach(function(key) {
@@ -410,9 +449,14 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
         if (!angular.equals({}, $scope.filesBinary)) {
             filesAsBinary = true;
         }
+        
+        //If the emoticons in the messages are converted to their markdowns, if the $scope.newMessagesWithEmojiMarkdown isn't an empty object
+        if (!angular.equals({}, $scope.newMessagesWithEmojiMarkdown)) {
+            emoticonsAsMarkdowns = true;
+        }
             
         //Based on the headers selected, for every message, take the values of the object and put them as a new item of the csvRows array
-        data.forEach(function(message, index) {            
+        data.forEach(function(message, index) {
             var values = headers.map(function(header) {
                 if (header === "downloadImageURL") {
                     if (imagesAsBase64) {
@@ -428,6 +472,15 @@ chatApp.controller("roomController", ["$scope", "$cookies", "$timeout", "$fireba
                         //If the file is present in the message, return its binary representation
                         if($scope.filesBinary.hasOwnProperty(index)) {
                             return $scope.filesBinary[index]
+                        }
+                    } else {
+                        return message[header]
+                    }
+                } else if (header === "value") {
+                    if (emoticonsAsMarkdowns) {
+                        //If the message text is present in the message, return the version which includes the markdowns representations of the emoticons
+                        if($scope.newMessagesWithEmojiMarkdown.hasOwnProperty(index)) {
+                            return $scope.newMessagesWithEmojiMarkdown[index]
                         }
                     } else {
                         return message[header]

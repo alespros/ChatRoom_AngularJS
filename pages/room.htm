@@ -155,6 +155,11 @@
                     <span class="btn btn-default" ng-click="loadFiles()">Load Files</span>
                     <span ng-if="filesBlobBeingLoaded">Loading...</span>
                 </p>
+                <p>
+                    Save emojis as markdown text
+                    <span class="btn btn-default" ng-click="emojisAsMarkdown()">Convert emojis</span>
+                    <span ng-if="emojisBeingConverted">Converting...</span>
+                </p>
                 <button type="submit" class="btn btn-default">Export data!</button>
             </form>
         </div>
